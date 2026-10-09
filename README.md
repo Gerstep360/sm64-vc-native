@@ -122,7 +122,32 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/install.ps1 `
   -Rom 'C:\ruta\a\Super Mario 64 (U) [!].z64'
 ```
 
-El instalador verifica el ejecutable y la ROM antes de copiar los archivos. También genera respaldos de los binarios anteriores.
+El instalador es independiente de Universal Modder. Requiere Python 3 en el PATH, los dos binarios compilados en `package/` y Vice City cerrado. `-Destination` y `-Rom` son obligatorios; el proyecto puede moverse sin cambiar el script.
+
+Antes de instalar, conserva las verificaciones del ejecutable, `GAME_10EN`, los bytes de los hooks y la ROM mediante `scripts/inspect.py`. También comprueba que ambos binarios sean DLL x86. Si falta algún archivo o falla una comprobación, no reemplaza archivos del juego.
+
+Busca las partidas en `GTA Vice City User Files` dentro de la carpeta Documentos que informa Windows, incluyendo las redirecciones de Documentos. Debe encontrar `gta_vc.set` o una partida `GTAVCsf1.b` a `GTAVCsf8.b`; si no puede identificar la carpeta, se detiene. Para una ubicación personalizada, añade `-Saves 'ruta a GTA Vice City User Files'`. No crea ni modifica partidas.
+
+Antes de sobrescribir nada, crea un respaldo en `<Destination>/SM64VCNative-backups/<fecha-identificador>/`:
+
+- `previous/`: los ASI, DLL y ROM anteriores que vaya a reemplazar.
+- `saves/`: una copia completa de la carpeta de partidas, con sus subcarpetas.
+- `install/`: los archivos preparados para esta instalación.
+- `manifest.json`: rutas, validación y hashes SHA256.
+
+Verifica las copias por hash y vuelve a comprobar que el juego esté cerrado antes de instalar. Si una copia de instalación falla, intenta restaurar los archivos anteriores. Al finalizar muestra los archivos instalados y la ubicación del respaldo. Guarda los respaldos en privado: pueden contener tu ROM y partidas.
+
+### Pruebas del instalador
+
+Después de compilar, ejecuta las pruebas con tu ejecutable y ROM compatibles:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/test-install.ps1 `
+  -GameExe 'ruta a gta-vc.exe' `
+  -Rom 'ruta a Super Mario 64 (U) [!].z64'
+```
+
+Las pruebas utilizan el verificador real y escriben únicamente en una carpeta temporal. Comprueban instalaciones nuevas, actualizaciones, respaldos, rechazo de archivos modificados o ausentes, juego abierto y restauración tras fallos de copia simulados. La prueba de detección automática lee las partidas reales para copiarlas al respaldo temporal y verifica que sus hashes no cambien. No ejecutan el juego ni instalan en tu instalación real. Las carpetas temporales se conservan para inspección.
 
 Los archivos principales del mod son:
 
