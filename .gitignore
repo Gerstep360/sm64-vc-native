@@ -1,0 +1,11 @@
+/build/
+/package/
+*.z64
+*.n64
+*.v64
+*.dll
+*.asi
+*.pdb
+/logs
+MODLOG.md
+FIELD_NOTES.md
